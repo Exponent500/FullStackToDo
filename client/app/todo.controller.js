@@ -5,9 +5,9 @@
         .module('FullStackToDoApp')
         .controller('TodoController', TodoController);
 
-    TodoController.$inject = ['$http', 'TodoFactory', 'toastr'];
+    TodoController.$inject = ['TodoFactory', 'toastr'];
 
-    function TodoController($http, TodoFactory, toastr) {
+    function TodoController(TodoFactory, toastr) {
         var vm = this;
 
 	    // set up an initial Priority value to be displayed within the Add Todo Item Panel
@@ -49,7 +49,7 @@
         		function(response) {
         		
         			// grab latest todo database snapshot so it can be displayed on the view 
-        			vm.todoList = response.data;
+        			vm.todoList = response;
         		
         		},
 
@@ -78,7 +78,7 @@
 				function(response) {
 
 				// store the toDoID received from the database, into the todoListItem array
-				todoListItem.toDoID = response.data.toDoID;
+				todoListItem.toDoID = response.toDoID;
 				
 				//push new todoListItem to todoList array
 				vm.todoList.push(todoListItem);

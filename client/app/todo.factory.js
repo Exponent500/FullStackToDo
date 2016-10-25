@@ -5,9 +5,9 @@
         .module('FullStackToDoApp')
         .factory('TodoFactory', TodoFactory);
 
-    TodoFactory.$inject = ['$http', '$q'];
+    TodoFactory.$inject = ['$http', '$q', 'todoApiUrl'];
 
-    function TodoFactory($http, $q) {
+    function TodoFactory($http, $q, todoApiUrl) {
         var service = {
             getTodoList: getTodoList,
             addTodoListItemToDatabase: addTodoListItemToDatabase,
@@ -26,7 +26,7 @@
         	$http({
         		
         		method: 'GET',
-        		url: 'http://localhost:63966/api/Todoes'
+        		url: todoApiUrl
 
         	})
         	.then(function(response) {
@@ -34,7 +34,7 @@
         		// check the GET Response to see if it returned an object or not
         		if (typeof response.data === 'object'){
         			
-        			defer.resolve(response);
+        			defer.resolve(response.data);
         		
         		} else {
         			
@@ -42,7 +42,7 @@
         		}
 
         	},
-        	// error handling
+        	// error handling of server generated error responses
         	function(error) {
 
         		defer.reject(error);
@@ -60,7 +60,7 @@
         	$http({
         		
         		method: 'POST',
-        		url: 'http://localhost:63966/api/Todoes',
+        		url: todoApiUrl,
         		// ensures the content is formatted in a way that the C# WEB API expects
         		data: $.param({
         			description: todoListItem.description,
@@ -79,7 +79,7 @@
         		// check the POST response to see if we got an object or not
         		if (typeof response.data === 'object') {
 
-    				defer.resolve(response);
+    				defer.resolve(response.data);
 
         		} else {
 
@@ -88,7 +88,7 @@
         		}
 
         	},
-        	//error handling
+        	// error handling of server generated error responses
         	function(error) {
 
         		defer.reject(error);
@@ -106,14 +106,14 @@
         	$http({
 
         		method: "DELETE",
-        		url: 'http://localhost:63966/api/Todoes/' + todoID
+        		url: todoApiUrl + todoID
         	})
         	.then(function(response) {
 
         		// check the DELETE response to see if we got an object or not
         		if (typeof response.data === 'object') {
 
-    				defer.resolve(response);
+    				defer.resolve(response.data);
 
         		} else {
 
@@ -122,7 +122,7 @@
         		}
 
         	},
-        	// error handling
+        	// error handling of server generated error responses
         	function(error) {
 
         		defer.reject(error);
@@ -140,7 +140,7 @@
         	$http({
 
         		method: "PUT",
-        		url: 'http://localhost:63966/api/Todoes/' + todoListItem.toDoID,
+        		url: todoApiUrl + todoListItem.toDoID,
         		// ensures the content is formatted in a way that the C# WEB API expects
         		data: $.param({
         			toDoID: todoListItem.toDoID,
@@ -160,7 +160,7 @@
         		// check the PUT response to see if it was successful or not
         		if (response.status === 204) {
 
-    				defer.resolve(response);
+    				defer.resolve(response.data);
 
         		} else {
 
@@ -169,7 +169,7 @@
         		}
 
         	},
-        	// error handling
+        	// error handling of server generated error responses
         	function(error) {
 
         		defer.reject(error);
