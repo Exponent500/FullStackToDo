@@ -1,0 +1,32 @@
+{
+  "name": "FullStackToDo",
+  "main": "gulpfile.js",
+  "homepage": "https://github.com/Exponent500/FullStackToDo",
+  "authors": [
+    "Exponent500 <reuvenkishon@gmail.com>"
+  ],
+  "description": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "angular": "^1.5.8",
+    "angular-messages": "^1.5.8",
+    "angular-toastr": "^2.1.1",
+    "components-font-awesome": "^4.6.3",
+    "font-awesome": "^4.6.3"
+  },
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "dist/css/bootstrap.css"
+      ]
+    }
+  }
+}

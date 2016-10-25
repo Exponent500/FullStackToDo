@@ -1,0 +1,24 @@
+.container {
+    padding-top: 35px;
+}
+
+/* ensures any one way bindings don't momentarily display at page load */
+.ng-cloak {
+	display:none;
+}
+
+/* makes the edit and delete font awesome icons a black color 
+   also makes the cursor change to a hand symbol when the cursor 
+   hovers over the icon
+*/
+.fa {
+	color:black;
+	cursor: pointer;
+}
+
+/* ensures the rightmost column of the todo list table is pushed up against the right edge of the row */
+table tr td:last-child {
+    white-space: nowrap;
+    width: 1px;
+}
+

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html ng-app="FullStackToDoApp" lang="en" class="ng-cloak"> 
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE-edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Full Stack To Do App</title>
+        <!-- bower:css -->
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="bower_components/angular-toastr/dist/angular-toastr.css" />
+        <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
+        <!-- endbower -->
+
+        <!-- inject:css -->
+        <link rel="stylesheet" href="/app/styles/main.css">
+        <!-- endinject -->  
+    </head>
+
+    <body ng-controller="TodoController as vm"> 
+        <div class="container">
+            <h1>Full Stack To Do App</h1>
+
+            <div class="col-xs-6">
+                <!-- Add Todo Item Panel -->
+                <form class="panel panel-info" name="addTodo" ng-class="{'has-error has-feedback' : addTodo.description.$touched && addTodo.description.$invalid}">
+                        <div class="panel-heading">
+                            <h5>Add Todo Item</h5>
+                        </div>
+                        
+                        <div class="panel-body">
+
+                            <!-- Description Input -->
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <input class="form-control" type="text" ng-model="vm.description" name="description" placeholder="Enter a Description" required>
+                            </div>
+
+                             <!-- Definition of ngMessage form validation messages -->
+                            <div class="h6" ng-messages="addTodo.description.$error" ng-show="addTodo.description.$touched" role="alert">
+                                <div class="text-danger" ng-message="required"><strong>You haven't entered anything yet!</strong></div>                 
+                            </div>
+
+                            <!-- Priority selection menu -->
+                            <div class="form-group">
+                                <label for="priority">Priority</label>
+                                <select class="form-control" ng-model="vm.priority" name="priority">
+                                    <option value="1">High</option>
+                                    <option value="2">Medium</option>
+                                    <option value="3">Low</option>
+                                </select>
+                            </div>
+                        </div> 
+
+                        <!-- Add Todo button -->
+                        <div class="panel-footer"> 
+                             <button type="button" class="btn btn-primary" ng-click="vm.addTodo()" ng-disabled="addTodo.$invalid">Add Todo</button>
+                        </div>
+                </form>
+            </div>
+
+            <!-- list of todo list items with delete and update modals -->
+            <div class="col-xs-6">
+                <!-- buttons for ordering the to do list -->
+                <div>
+                    <!-- Sort by highest priority button -->
+                    <button type="button" class="btn btn-info" ng-class= "vm.sortByHighestPriorityNotSelected ? 'btn-info' : 'btn-warning'" ng-click="vm.orderByHighestPriority()">Order by highest priority</button>
+                    <!-- Sort by lowest priority button -->
+                    <button type="button" class="btn btn-info" ng-class= "vm.sortByLowestPriorityNotSelected ? 'btn-info' : 'btn-warning'" ng-click="vm.orderByLowestPriority()">Order by lowest priority</button>
+                    <!-- Sort alphabetically button -->
+                    <button type="button" class="btn btn-info" ng-class= "vm.sortAlphabeticallyNotSelected ? 'btn-info' : 'btn-warning'" ng-click="vm.orderAlphabetically()">Order alphabetically</button>
+                </div>
+
+                <!-- Dynamic todo list table -->
+                <table class="table table-border">
+                    <!-- ng-class is set up to change background color of each todo list item, based on its priority -->
+                    <!-- the orderBy filter for the ng-repeat is set up such that the list will first be ordered by sortType, and then by sortSubType. sortType and sortSubType are dynamically changed based on which OrderBy button is pressed -->
+                    <tr ng-repeat="todoListItem in vm.todoList | orderBy:[vm.sortType, vm.sortSubType]" ng-class="{'bg-danger': todoListItem.priority === 1, 'bg-warning': todoListItem.priority === 2, 'bg-info': todoListItem.priority === 3}">
+                        <td> 
+                            {{todoListItem.description}}
+                        </td>
+                        <td>
+                            <!-- Delete ToDo List Item Button-->
+                            <a><i class="fa fa-times" onmouseover="" data-toggle="modal" data-target="#deleteModal-{{todoListItem.toDoID}}"></i></a>
+                            <!-- Update ToDo List Item Button-->
+                            <a><i class="fa fa-pencil" onmouseover="" data-toggle="modal" data-target="#updateModal-{{todoListItem.toDoID}}"></i></a>
+                            <!-- Modal to confirm deletion of ToDo List Item -->
+                            <div class="modal fade" id="deleteModal-{{todoListItem.toDoID}}" tabindex="-1" role="dialog">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <h3 class="modal-title">Delete Todo item</h3>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p class="error-text">Are you sure you want to delete this todo item?</p>
+                                        </div>
+                                        
+                                        <!-- Cancel Button -->
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="vm.removeTodo(todoListItem.toDoID)">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Modal for updating a ToDo List Item -->
+                            <form class="modal fade" name="updateTodo" id="updateModal-{{todoListItem.toDoID}}" tabindex="-1" role="dialog" ng-class="{'has-error has-feedback' : updateTodo.description.$touched && updateTodo.description.$invalid}">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">×</button>
+                                            <h3 class="modal-title">Update a Todo List Item</h3>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                
+                                                <!-- Description Input Field -->
+                                                <label for="description">Description</label>
+                                                <input class="form-control" type="text" ng-model="vm.updatedDescription" name="description" placeholder="Enter a Description" required>
+                                            </div>
+                                            
+                                            <!-- ngMessage form validation message definitions -->
+                                            <div class="h6" ng-messages="updateTodo.description.$error" ng-show="updateTodo.description.$touched" role="alert">
+                                                <div class="text-danger" ng-message="required"><strong>You haven't entered anything yet!</strong></div>          
+                                            </div>
+
+                                            <!-- Priority selection menu -->
+                                            <div class="form-group">
+                                                <label for="priority">Priority</label>
+                                                <select class="form-control" ng-model="vm.updatedPriority" name="priority">
+                                                    <option value="1">High</option>
+                                                    <option value="2">Medium</option>
+                                                    <option value="3">Low</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Cancel and Update buttons-->
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn" data-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="vm.updateTodo(vm.updatedDescription, vm.updatedPriority, todoListItem.toDoID)" ng-disabled="updateTodo.$invalid">Update</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- bower:js -->
+        <script src="bower_components/jquery/dist/jquery.js"></script>
+        <script src="bower_components/angular/angular.js"></script>
+        <script src="bower_components/angular-messages/angular-messages.js"></script>
+        <script src="bower_components/angular-toastr/dist/angular-toastr.tpls.js"></script>
+        <!-- endbower -->
+
+        <!-- inject:js -->
+        <script src="/app/app.module.js"></script>
+        <script src="/app/todo.controller.js"></script>
+        <script src="/app/todo.factory.js"></script>
+        <!-- endinject -->
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.3.7/js/tether.min.js" integrity="sha384-XTs3FgkjiBgo8qjEjBk0tGmf3wPrWtA6coPfQDfFEY8AnYJwjalXCiosYRBIBZX8" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
+    </body>
+</html>
